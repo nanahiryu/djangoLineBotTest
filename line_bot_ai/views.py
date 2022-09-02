@@ -8,11 +8,11 @@ from linebot import LineBotApi
 from linebot.models import ImageSendMessage
 from linebot.exceptions import LineBotApiError
 
-import json
+import environ
 
-with open('line.json') as line:
-  line_json = json.load(line)
-ACCESSTOKEN = line_json["ACCESSTOKEN"]
+env = environ.Env()
+
+ACCESSTOKEN = env("ACCESSTOKEN")
 
 line_bot_api = LineBotApi(ACCESSTOKEN)
 
