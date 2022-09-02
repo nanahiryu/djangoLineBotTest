@@ -21,15 +21,17 @@ def index(request):
     if request.method == 'POST':
         request = json.loads(request.body.decode('utf-8'))
         data = request['events'][0]
-        message = data['message']
+        message = data['message']['text']
         reply_token = data['replyToken']
-        if message == 'random':
-            res_image = ImageSendMessage(original_content_url="https://unsplash.it/630/400", preview_image_url="https://unsplash.it/630/400")
+        if message == '正解':
+            res_image = ImageSendMessage(original_content_url=r"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGwjQL1IJHjHO4p3Z16VSdNsVRzrTvIcbNW4FVLJgnoe7ZiACh&s", preview_image_url=r"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGwjQL1IJHjHO4p3Z16VSdNsVRzrTvIcbNW4FVLJgnoe7ZiACh&s")
         else:
-            res_image = ImageSendMessage(original_content_url="https://i.pximg.net/c/600x600/img-master/img/2017/06/30/21/10/14/63636005_p0_master1200.jpg", preview_image_url="https://i.pximg.net/c/600x600/img-master/img/2017/06/30/21/10/14/63636005_p0_master1200.jpg")
+            res_image = ImageSendMessage(original_content_url=r"https://2.bp.blogspot.com/-b8RGYZ3IXX4/Vf-aJng1qzI/AAAAAAAAyDo/pTdU_3xTK0w/s400/dame_man.png", preview_image_url=r"https://2.bp.blogspot.com/-b8RGYZ3IXX4/Vf-aJng1qzI/AAAAAAAAyDo/pTdU_3xTK0w/s400/dame_man.png")
 
         try:
             line_bot_api.reply_message(reply_token, res_image)
+            print(message)
+            print(res_image)
         except LineBotApiError as e:
             print(e)
 
