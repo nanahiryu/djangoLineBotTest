@@ -17,6 +17,18 @@ ACCESSTOKEN = env("ACCESSTOKEN")
 
 line_bot_api = LineBotApi(ACCESSTOKEN)
 
+def reply(reply_token, res_context):
+    try:
+        line_bot_api.reply_message(reply_token, res_context)
+    except LineBotApiError as e:
+        print(e)
+
+def push(userId, message):
+    try:
+        line_bot_api.push_message(userId, message)
+    except LineBotApiError as e:
+        print(e)
+
 @csrf_exempt
 def index(request):
     if request.method == 'POST':
@@ -28,6 +40,7 @@ def index(request):
             message = data['message']['text']
             if message == '画像':
                 res_context = ImageSendMessage(original_content_url=r"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGwjQL1IJHjHO4p3Z16VSdNsVRzrTvIcbNW4FVLJgnoe7ZiACh&s", preview_image_url=r"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTGwjQL1IJHjHO4p3Z16VSdNsVRzrTvIcbNW4FVLJgnoe7ZiACh&s")
+                reply(reply_token, res_context)
             
             elif message == 'シナリオ':
                 actions = [
@@ -56,8 +69,10 @@ def index(request):
                     alt_text='buttons template',
                     template=ButtonsTemplate(text='どのシナリオが見たいかな？', actions=actions)
                     )
+                reply(reply_token, res_context)
             else:
                 res_context = TextSendMessage(text="それには答えられないわ...")
+                reply(reply_token, res_context)
                 
         # buttonのresponse.dataのjsonには'postback'というkeyが含まれます
         # そのためbuttonへの返答には以下の文が動きます
@@ -70,6 +85,7 @@ def index(request):
                 key, item = temp.split('=')
                 query[key] = item
             # 辞書に入れる処理ここまで
+            print(query)
 
             # シナリオを返します
             if 'init' in query.keys():
@@ -85,12 +101,17 @@ def index(request):
                         alt_text='buttons template',
                         template=ButtonsTemplate(text='電化製品って電気がないと動かないって習ったよね？', actions=actions)
                         )
+                    reply(reply_token, res_context)
                 else:
                     res_context = TextSendMessage(text=f'準備中です...')
+                    reply(reply_token, res_context)
                     
             if 'state' in query.keys():
+                print("key")
                 if query['scenario'] == "1":
+                    print("scenario")
                     if query['next'] == "1":
+                        print("next")
                         actions = [
                             {
                                 "type": "postback",
@@ -107,12 +128,10 @@ def index(request):
                             alt_text='buttons template',
                             template=ButtonsTemplate(text='「電気の流れ」のことって何て言うんだっけ？', actions=actions)
                             )
+                        reply(reply_token, res_context)
                     if query['next'] == '2':
                         res_context = TextSendMessage(text=f'電流ね！「電気」の「流れ」だから「電流」なんだろうね。ちょっとウケる')
-                        try:
-                            line_bot_api.reply_message(reply_token, res_context)
-                        except LineBotApiError as e:
-                            print(e)
+                        reply(reply_token, res_context)
                         actions = [
                             {
                                 "type": "postback",
@@ -129,6 +148,8 @@ def index(request):
                             alt_text='buttons template',
                             template=ButtonsTemplate(text='電流が流れるための道筋って...なんて呼ぶんだっけ？', actions=actions)
                             )
+                        push(data['source']['userId'], res_context)
+
                     if query['next'] == '3':
                         actions = [
                             {
@@ -141,12 +162,11 @@ def index(request):
                             alt_text='buttons template',
                             template=ButtonsTemplate(text='あれ、電流だっけ？「電気」の「流れ」だから」...', actions=actions)
                             )
+                        reply(reply_token, res_context)
                     if query['next'] == '4':
                         res_context = TextSendMessage(text=f'電流だと思う！「電気」の「流れ」だから「電流」！')
-                        try:
-                            line_bot_api.reply_message(reply_token, res_context)
-                        except LineBotApiError as e:
-                            print(e)
+                        reply(reply_token, res_context)
+
                         actions = [
                             {
                                 "type": "postback",
@@ -163,12 +183,13 @@ def index(request):
                             alt_text='buttons template',
                             template=ButtonsTemplate(text='電流が流れるための道筋って...なんて呼ぶんだっけ？', actions=actions)
                             )
-                    if query['next'] == '6' | '7':
+                        push(data['source']['userId'], res_context)
+                    if query['next'] == '6':
                         res_context = TextSendMessage(text=f'準備中です...')
-        try:
-            line_bot_api.reply_message(reply_token, res_context)
-        except LineBotApiError as e:
-            print(e)
+                        reply(reply_token, res_context)
+                    if query['next'] == '7':
+                        res_context = TextSendMessage(text=f'準備中です...')
+                        reply(reply_token, res_context)
 
         return HttpResponse("ok")
 
