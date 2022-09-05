@@ -1,7 +1,8 @@
 # djangoLineBotTest
 
 ## ローカルに開発環境を作る
-1. 作業したいディレクトリで`git clone `
+1. 作業したいディレクトリで`git clone https://github.com/nanahiryu/djangoLineBotTest.git`
+2. `cd `
 
 ## ローカルサーバーの立て方
 1. プロジェクトディレクトリ(`manage.py`がある階層です)で`python manage.py runserver`
